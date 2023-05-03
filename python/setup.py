@@ -94,6 +94,7 @@ skbuild.setup(
         # everything not OS X. We depend on C++11, which makes our minimum
         # supported OS X release 10.9
         '-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9',
+        '-DCMAKE_OSX_ARCHITECTURES=arm64',
     ],
     cmdclass = { 'test': setuptools.command.test.test },
     classifiers = [

@@ -9,25 +9,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: windows-2019
-            cmake_generator: "Visual Studio 16 2019"
-            cmake_generator_platform: "x64"
-            arch: AMD64
-          - os: windows-2019
-            cmake_generator: "Visual Studio 16 2019"
-            cmake_generator_platform: "Win32"
-            arch: x86
-          - os: ubuntu-20.04
-            arch: x86_64
-          - os: ubuntu-20.04
-            arch: aarch64
-          - os: ubuntu-20.04
-            arch: i686
-          - os: macOS-10.15
-            arch: x86_64
+          - os: macos-12
+            arch: "x86_64 universal2 arm64"
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # Used to host cibuildwheel
       - uses: actions/setup-python@v2

@@ -1,7 +1,9 @@
 #ifndef SEGYIO_HPP
 #define SEGYIO_HPP
 
+#include <algorithm>
 #include <cerrno>
+#include <cstdint>
 #include <cstring>
 #include <exception>
 #include <functional>

@@ -138,3 +138,16 @@ add_test(NAME c.segy.mmap     COMMAND c.segy --test-mmap)
 add_test(NAME c.segy.lsb      COMMAND c.segy --test-lsb)
 add_test(NAME c.segy.mmap.lsb COMMAND c.segy --test-mmap --test-lsb)
 add_test(NAME cpp.segy        COMMAND c.segy [c++])
+
+
+# These tests check if code that includes the public C and C++ header compile
+# correctly. This is done to detect missing includes. This may not be picked up
+# by the tests before because the test framework does pull in some C++
+# dependencies like `cstdint` and `algorithm`.
+add_executable(c-include.segy test/test-include.c)
+target_link_libraries(c-include.segy segyio)
+target_include_directories(c-include.segy PRIVATE src)
+
+add_executable(cpp-include.segy test/test-include.cpp)
+target_link_libraries(cpp-include.segy segyio::segyio)
+target_include_directories(cpp-include.segy PRIVATE src experimental)

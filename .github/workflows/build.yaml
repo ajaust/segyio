@@ -60,6 +60,7 @@ jobs:
             -DBUILD_SHARED_LIBS=ON \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_NAME_DIR=/usr/local/lib \
+            -DEXPERIMENTAL=ON \
             ${{ matrix.mkdoc }} \
             ${{ matrix.cmake_generator }} \
 

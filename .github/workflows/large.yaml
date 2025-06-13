@@ -35,6 +35,7 @@ jobs:
       - name: Configure and Build
         shell: bash
         run: |
+          set +e
           cmake -S . -B build \
             -DBUILD_PYTHON=ON \
             -DBUILD_TESTING=OFF \

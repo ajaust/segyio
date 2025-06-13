@@ -1,12 +1,15 @@
 #ifndef SEGYIO_HPP
 #define SEGYIO_HPP
 
+#include <algorithm>
 #include <cerrno>
+#include <cstdint>
 #include <cstring>
 #include <exception>
 #include <functional>
 #include <iterator>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -426,6 +429,7 @@ public:
     explicit
     basic_file( const segyio::path& path,
                 const segyio::config& cfg = config() ) noexcept(false)
+    // cppcheck-suppress internalAstError
     : Traits< basic_file >( {} ) ... {
 
         this->consider( path );
@@ -1324,7 +1328,7 @@ binary_header binary_header_reader< Derived >::get_bin() noexcept(false) {
 
     const auto getb = [&]( int key ) {
         int32_t f;
-        segy_get_bfield( buffer, key, &f );
+        segy_get_field_int( buffer, key, &f );
         return f;
     };
 
@@ -1332,8 +1336,8 @@ binary_header binary_header_reader< Derived >::get_bin() noexcept(false) {
     b.job_identification    = getb( SEGY_BIN_JOB_ID );
     b.line                  = getb( SEGY_BIN_LINE_NUMBER );
     b.reel                  = getb( SEGY_BIN_REEL_NUMBER );
-    b.traces                = getb( SEGY_BIN_TRACES );
-    b.auxiliary_traces      = getb( SEGY_BIN_AUX_TRACES );
+    b.traces                = getb( SEGY_BIN_ENSEMBLE_TRACES );
+    b.auxiliary_traces      = getb( SEGY_BIN_AUX_ENSEMBLE_TRACES );
     b.interval              = getb( SEGY_BIN_INTERVAL );
     b.interval_orig         = getb( SEGY_BIN_INTERVAL_ORIG );
     b.samples               = getb( SEGY_BIN_SAMPLES );
@@ -1389,7 +1393,7 @@ trace_header trace_header_reader< Derived >::get_th( int i ) noexcept(false) {
 
     const auto getf = [&]( int key ) {
         int32_t f;
-        segy_get_field( buffer, key, &f );
+        segy_get_field_int( buffer, key, &f );
         return f;
     };
 

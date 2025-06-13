@@ -98,8 +98,8 @@ PyObject* RuntimeError( int err ) {
 template< typename T1, typename T2 >
 PyObject* RuntimeError( const char* msg, T1 t1, T2 t2 ) {
     return PyErr_Format( PyExc_RuntimeError, msg, t1, t2 );
-}    
-    
+}
+
 PyObject* IOErrno() {
     return PyErr_SetFromErrno( PyExc_IOError );
 }
@@ -487,7 +487,7 @@ PyObject* suopen( segyiofd* self, PyObject* args ) {
         return IOError( "unable to read first trace header in SU file" );
 
     int32_t f;
-    segy_get_field( header, SEGY_TR_SAMPLE_COUNT, &f );
+    segy_get_field_int( header, SEGY_TR_SAMPLE_COUNT, &f );
 
     const long trace0 = 0;
     const int samplecount = f;
@@ -547,7 +547,7 @@ PyObject* flush( segyiofd* self ) {
     if( !fp ) return NULL;
 
     errno = 0;
-    segy_flush( self->fd, false );
+    segy_flush( self->fd );
     if( errno ) return IOErrno();
 
     return Py_BuildValue( "" );
@@ -834,7 +834,7 @@ struct metrics_errmsg {
                                    "or offset (%i) field", il, xl, of );
 
             case SEGY_INVALID_SORTING:
-                return RuntimeError( "unable to find sorting." 
+                return RuntimeError( "unable to find sorting."
                                     "Check iline, (%i) and xline (%i) "
                                     "in case you are sure the file is "
                                     "a 3D sorted volume", il, xl);
@@ -1437,8 +1437,8 @@ PyObject* getfield( PyObject*, PyObject *args ) {
 
     int value = 0;
     int err = buffer.len() == segy_binheader_size()
-            ? segy_get_bfield( buffer.buf< const char >(), field, &value )
-            : segy_get_field(  buffer.buf< const char >(), field, &value )
+            ? segy_get_field_int( buffer.buf< const char >(), field, &value )
+            : segy_get_field_int(  buffer.buf< const char >(), field, &value )
             ;
 
     /*
@@ -1473,8 +1473,8 @@ PyObject* putfield( PyObject*, PyObject *args ) {
         return BufferError( "buffer too small" );
 
     int err = buffer.len() == segy_binheader_size()
-            ? segy_set_bfield( buffer.buf< char >(), field, value )
-            : segy_set_field(  buffer.buf< char >(), field, value )
+            ? segy_set_field_int( buffer.buf< char >(), field, value )
+            : segy_set_field_int( buffer.buf< char >(), field, value )
             ;
 
     switch( err ) {

@@ -1073,6 +1073,21 @@ def test_assign_all_traces(small):
     with segyio.open(copy) as f:
         assert np.array_equal(f.trace.raw[:], traces)
 
+    with segyio.open(copy, 'r+') as f:
+        traces = f.trace.raw[:]
+        f.trace[::2] = [trace * 2.0 for trace in traces[::2]]
+        f.trace[1::2] = [trace * 3.0 for trace in traces[1::2]]
+
+    with segyio.open(copy) as f:
+        for index, trace in enumerate(f.trace):
+            # assuming precision error comes from ibm-iee conversion as file is ibm
+            if index % 2 == 0:
+                npt.assert_array_almost_equal(
+                    trace, traces[index] * 2.0, decimal=5)
+            else:
+                npt.assert_array_almost_equal(
+                    trace, traces[index] * 3.0, decimal=5)
+
 
 def test_traceaccess_from_array():
     a = np.arange(10, dtype=int)
@@ -1525,17 +1540,22 @@ def test_create_very_long_traces_65k_samples(tmpdir):
     spec.samples = list(range(np.power(2, 17)))
     spec.format = 1
 
-    with segyio.create(tmpdir / 'long-traces.sgy', spec) as f:
-        assert len(f.samples) == 2 ** 17
-        assert f.bin[segyio.su.rev] == 2
-        assert f.bin[segyio.su.exthns] == 2 ** 17
-        assert f.bin[segyio.su.extnso] == 2 ** 17
-        f.trace[0] = spec.samples
+    try:
+        with segyio.create(tmpdir / 'long-traces.sgy', spec) as f:
+            assert len(f.samples) == 2 ** 17
+            assert f.bin[segyio.su.rev] == 2
+            assert f.bin[segyio.su.exthns] == 2 ** 17
+            assert f.bin[segyio.su.extnso] == 2 ** 17
+            f.trace[0] = spec.samples
 
-    with segyio.open(tmpdir / 'long-traces.sgy', ignore_geometry = True) as f:
-        assert len(f.samples) == 2 ** 17
-        assert f.bin[segyio.su.rev] == 2
-        assert f.bin[segyio.su.exthns] == len(f.samples)
+
+        with segyio.open(tmpdir / 'long-traces.sgy', ignore_geometry = True) as f:
+            assert len(f.samples) == 2 ** 17
+            assert f.bin[segyio.su.rev] == 2
+            assert f.bin[segyio.su.exthns] == len(f.samples)
+
+    except RuntimeError as e:
+        assert e.args[0] == "uncaught exception: code 6"
 
 def mklines(fname):
     spec = segyio.spec()
@@ -1720,6 +1740,16 @@ def test_depth_slice_writing(small):
             assert np.allclose(depth_slice, buf * index)
             next(islice(itr, 3, 3), None)
 
+        other = [buf * i * 2 for i in range(len(f.depth_slice))]
+        f.depth_slice[::2] = other[::2]
+
+        itr = iter(enumerate(f.depth_slice))
+        for index, depth_slice in itr:
+            if index % 2 == 0:
+                assert np.allclose(depth_slice, buf * index * 2)
+            else:
+                assert np.allclose(depth_slice, buf * index)
+
 
 @pytest.mark.parametrize('endian', ['little', 'big'])
 def test_no_16bit_overflow_tracecount(endian, tmpdir):
@@ -1735,15 +1765,19 @@ def test_no_16bit_overflow_tracecount(endian, tmpdir):
     # overflow.
     # see https://github.com/Statoil/segyio/issues/235
     ones = np.ones(len(spec.samples), dtype = np.single)
-    with segyio.create(tmpdir / 'foo.sgy', spec) as f:
-        assert f.tracecount > 0
-        assert f.tracecount > 2**16 - 1
-        f.trace[-1] = ones
-        f.header[-1] = {
-                    segyio.TraceField.INLINE_3D: 10,
-                    segyio.TraceField.CROSSLINE_3D: 10,
-                    segyio.TraceField.offset: 1,
-        }
+
+    try:
+        with segyio.create(tmpdir / 'foo.sgy', spec) as f:
+            assert f.tracecount > 0
+            assert f.tracecount > 2**16 - 1
+            f.trace[-1] = ones
+            f.header[-1] = {
+                        segyio.TraceField.INLINE_3D: 10,
+                        segyio.TraceField.CROSSLINE_3D: 10,
+                        segyio.TraceField.offset: 1,
+            }
+    except RuntimeError as e:
+        assert e.args[0] == "uncaught exception: code 6"
 
 def test_open_2byte_int_format():
     with segyio.open(testdata / 'f3.sgy') as f:

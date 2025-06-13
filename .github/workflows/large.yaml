@@ -16,8 +16,8 @@ jobs:
       matrix:
         include:
           # only 64-bit windows
-          - os: windows-2019
-            cmake_generator: '-G "Visual Studio 16 2019"'
+          - os: windows-2022
+            cmake_generator: '-G "Visual Studio 17 2022"'
           - os: ubuntu-latest
 
     steps:
@@ -84,8 +84,8 @@ jobs:
   # 32-bit one directly. Build works in cbuildwheel as they seem to hack the
   # environment to make it look like 32-bit system.
   large_win32:
-    name: Run large tests on windows-2019, 32-bit wheel
-    runs-on: windows-2019
+    name: Run large tests on windows-2022, 32-bit wheel
+    runs-on: windows-2022
 
     steps:
       - uses: actions/checkout@v4
@@ -108,7 +108,7 @@ jobs:
         env:
           CIBW_BUILD_VERBOSITY: 1
           CIBW_ENVIRONMENT_WINDOWS: >
-            CMAKE_GENERATOR="Visual Studio 16 2019"
+            CMAKE_GENERATOR="Visual Studio 17 2022"
             CMAKE_GENERATOR_PLATFORM="Win32"
         run: |
           python -m cibuildwheel --only cp312-win32 --output-dir ./wheelhouse python/

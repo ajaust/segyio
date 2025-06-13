@@ -35,8 +35,8 @@ jobs:
       # Allow intermediate failures in configuration step.
       - name: Configure
         shell: bash
+        continue-on-error: true
         run: |
-          set +e
           cmake -S . -B build \
             -DBUILD_PYTHON=ON \
             -DBUILD_TESTING=OFF \

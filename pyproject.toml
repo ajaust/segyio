@@ -7,72 +7,74 @@ build-backend = "scikit_build_core.build"
 [project]
 name = "segyio"
 version = "1.9.13"
-description = 'Simple & fast IO for SEG-Y files',
-author = [
-    { name 'Equinor ASA', email = 'jokva@equinor.com' },
+description = "Simple & fast IO for SEG-Y files"
+authors = [
+    { name = "Equinor ASA", email = "jokva@equinor.com" },
 ]
-url = 'https://github.com/equinor/segyio',
-packages = ['segyio', 'segyio.su'],
-package_data = { 'segyio': ['segyio.dll'], },
+urls.homepage = "https://github.com/equinor/segyio"
+#packages = ["segyio", "segyio.su"]
+# Not sure if the part below is still needed
+#package_data = { "segyio" = ["segyio.dll"], }
 license = "LGPL-3.0-or-later"
-platforms = 'any',
+license-files = [ "License.md" ]
+# platforms = "any"
 requires-python = ">=3.9"
-dependencies = ['numpy >= 1.10'],
+dependencies = ["numpy >= 1.10"]
 # The 'readme' is equivalent to the `long_description` field in setuptools [1].
 # We have to decide if we want to keep this long description or if we want to
 # change it.
 #
 # [1]: https://peps.python.org/pep-0621/#readme
-readme = """
-=======
-SEGY IO
-=======
-
-https://segyio.readthedocs.io
-
-Introduction
-------------
-
-Segyio is a small LGPL licensed C library for easy interaction with SEG Y
-formatted seismic data, with language bindings for Python and Matlab. Segyio is
-an attempt to create an easy-to-use, embeddable, community-oriented library for
-seismic applications. Features are added as they are needed; suggestions and
-contributions of all kinds are very welcome.
-
-Feature summary
----------------
- * A low-level C interface with few assumptions; easy to bind to other
-   languages.
- * Read and write binary and textual headers.
- * Read and write traces, trace headers.
- * Easy to use and native-feeling python interface with numpy integration.
-
-Project goals
--------------
-
-Segyio does necessarily attempt to be the end-all of SEG-Y interactions;
-rather, we aim to lower the barrier to interacting with SEG-Y files for
-embedding, new applications or free-standing programs.
-
-Additionally, the aim is not to support the full standard or all exotic (but
-correctly) formatted files out there. Some assumptions are made, such as:
-
- * All traces in a file are assumed to be of the same sample size.
- * It is assumed all lines have the same number of traces.
-
-The writing functionality in Segyio is largely meant to *modify* or adapt
-files. A file created from scratch is not necessarily a to-spec SEG-Y file, as
-we only necessarily write the header fields segyio needs to make sense of the
-geometry. It is still highly recommended that SEG-Y files are maintained and
-written according to specification, but segyio does not mandate this.
-
-"""
+#readme = """
+#=======
+#SEGY IO
+#=======
+#
+#https://segyio.readthedocs.io
+#
+#Introduction
+#------------
+#
+#Segyio is a small LGPL licensed C library for easy interaction with SEG Y
+#formatted seismic data, with language bindings for Python and Matlab. Segyio is
+#an attempt to create an easy-to-use, embeddable, community-oriented library for
+#seismic applications. Features are added as they are needed; suggestions and
+#contributions of all kinds are very welcome.
+#
+#Feature summary
+#---------------
+# * A low-level C interface with few assumptions; easy to bind to other
+#   languages.
+# * Read and write binary and textual headers.
+# * Read and write traces, trace headers.
+# * Easy to use and native-feeling python interface with numpy integration.
+#
+#Project goals
+#-------------
+#
+#Segyio does necessarily attempt to be the end-all of SEG-Y interactions;
+#rather, we aim to lower the barrier to interacting with SEG-Y files for
+#embedding, new applications or free-standing programs.
+#
+#Additionally, the aim is not to support the full standard or all exotic (but
+#correctly) formatted files out there. Some assumptions are made, such as:
+#
+# * All traces in a file are assumed to be of the same sample size.
+# * It is assumed all lines have the same number of traces.
+#
+#The writing functionality in Segyio is largely meant to *modify* or adapt
+#files. A file created from scratch is not necessarily a to-spec SEG-Y file, as
+#we only necessarily write the header fields segyio needs to make sense of the
+#geometry. It is still highly recommended that SEG-Y files are maintained and
+#written according to specification, but segyio does not mandate this.
+#
+#"""
+readme = "README.md"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Other Environment",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
     "Natural Language :: English",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3.9",
@@ -83,19 +85,19 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Physics",
     "Topic :: Software Development :: Libraries",
-    "Topic :: Utilities"
-],
+    "Topic :: Utilities",
+]
 
 
-[tool:pytest]
-python_files = test/*.py
-addopts = --ignore=test/benchmarks.py --ignore=test/large.py
+[tool.pytest]
+python_files = "test/*.py"
+addopts = "--ignore=test/benchmarks.py --ignore=test/large.py"
 
 [tool.scikit-build]
 # We can safely pass OSX_DEPLOYMENT_TARGET as it's ignored on
 # everything not OS X. We depend on C++11, which makes our minimum
 # supported OS X release 10.9
-cmake.args = "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"jV
+cmake.args = [ "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9" ]
 sdist.include = [
     "License.md",
     "README.md",

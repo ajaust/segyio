@@ -7,7 +7,7 @@ if (SKBUILD)
     return ()
 endif ()
 
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.15)
 project(segyio-python)
 
 if (REQUIRE_PYTHON)

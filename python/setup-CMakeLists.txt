@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.15)
 project(segyio-python-extension LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -6,8 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 find_package(Python COMPONENTS Development.Module REQUIRED)
 find_package(segyio REQUIRED)
 
-add_library(_segyio MODULE segyio/segyio.cpp)
-python_extension_module(_segyio)
+python_add_library(_segyio MODULE WITH_SOABI segyio/segyio.cpp)
 target_link_libraries(_segyio segyio::segyio)
 
 if (MSVC)

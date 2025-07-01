@@ -6,7 +6,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "segyio"
-version = 1.9.13
+version = "1.9.13"
 description = 'Simple & fast IO for SEG-Y files',
 author = [
     { name 'Equinor ASA', email = 'jokva@equinor.com' },

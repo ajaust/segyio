@@ -93,22 +93,4 @@ skbuild.setup(
         # supported OS X release 10.9
         '-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9',
     ],
-    classifiers = [
-        'Development Status :: 5 - Production/Stable',
-        'Environment :: Other Environment',
-        'Intended Audience :: Developers',
-        'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)',
-        'Natural Language :: English',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: 3.10',
-        'Programming Language :: Python :: 3.11',
-        'Programming Language :: Python :: 3.12',
-        'Programming Language :: Python :: 3.13',
-        'Topic :: Scientific/Engineering',
-        'Topic :: Scientific/Engineering :: Physics',
-        'Topic :: Software Development :: Libraries',
-        'Topic :: Utilities'
-    ],
 )

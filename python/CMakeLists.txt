@@ -34,7 +34,7 @@ find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
 
 
 python_add_library(_segyio MODULE WITH_SOABI segyio/segyio.cpp)
-target_link_libraries(_segyio PRIVATE segyio)
+target_link_libraries(_segyio PRIVATE segyio::segyio)
 
 set(SEGYIO_PYTHON_INSTALL_DIR lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages/segyio)
 

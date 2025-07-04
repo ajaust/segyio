@@ -160,6 +160,8 @@ test-command = [
         --dst tmptest/python/pyproject.toml   \
     """,
     """cd tmptest/python""",
+    """echo \"tmptest/python\"""",
+    """ls -l""",
     """pytest test""",
     """cd ../../""",
     """python {project}/.github/utils.py remove --paths tmptest""",

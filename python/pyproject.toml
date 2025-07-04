@@ -155,6 +155,10 @@ test-command = [
         --src {project}/test-data                \
         --dst tmptest/test-data                  \
     """,
+    """python {project}/.github/utils.py copy \
+        --src {package}/pyproject.toml        \
+        --dst tmptest/python/pyproject.toml   \
+    """,
     """cd tmptest/python""",
     """pytest test""",
     """cd ../../""",

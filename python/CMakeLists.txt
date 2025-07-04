@@ -10,106 +10,125 @@ endif ()
 cmake_minimum_required(VERSION 3.15)
 project(segyio-python)
 
-if (REQUIRE_PYTHON)
-    set(BUILD_PYTHON ON)
-endif()
+#if (REQUIRE_PYTHON)
+#    set(BUILD_PYTHON ON)
+#endif()
+#
+#if (NOT BUILD_PYTHON)
+#    return()
+#endif()
 
-if (NOT BUILD_PYTHON)
-    return()
-endif()
+find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
 
-find_package(PythonInterp REQUIRED)
+#if (NOT PYTHON_Interpreter_FOUND AND REQUIRE_PYTHON)
+#    message(SEND_ERROR "Could not find python intepreter")
+#    return()
+#endif()
+#
+#if (NOT PYTHON_Interpreter_FOUND)
+#    message(WARNING "Could not find python - skipping python bindings. "
+#                    "Select specific python distribution with "
+#                    "-DPYTHON_EXECUTABLE=bin/python")
+#    return()
+#endif()
 
-if (NOT PYTHON_EXECUTABLE AND REQUIRE_PYTHON)
-    message(SEND_ERROR "Could not find python executable")
-    return()
-endif()
 
-if (NOT PYTHON_EXECUTABLE)
-    message(WARNING "Could not find python - skipping python bindings. "
-                    "Select specific python distribution with "
-                    "-DPYTHON_EXECUTABLE=bin/python")
-    return()
-endif()
+python_add_library(_segyio MODULE WITH_SOABI segyio/segyio.cpp)
+target_link_libraries(_segyio PRIVATE segyio)
 
-if (PYTHON_INSTALL_LAYOUT)
-    set(setup-install-layout --install-layout ${PYTHON_INSTALL_LAYOUT})
-endif()
+set(SEGYIO_PYTHON_INSTALL_DIR lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages/segyio)
 
-set(setup.py ${CMAKE_CURRENT_SOURCE_DIR}/setup.py)
-if (CMAKE_BUILD_TYPE)
-    # use the cmake_build_type of the source project, unless it has been
-    # specifically overriden
-    set(SEGYIO_PYTHON_BUILD_TYPE
-        --build-type=${CMAKE_BUILD_TYPE}
-        CACHE STRING "override CMAKE_BUILD_TYPE in python extension"
+
+if (MSVC)
+    target_compile_options(_segyio
+        BEFORE
+        PRIVATE
+            /EHsc
     )
 endif ()
 
-add_custom_target(
-    segyio-python ALL
-    COMMENT "Building python library with setup.py"
-    SOURCES ${setup.py}
-    DEPENDS ${setup.py}
-    VERBATIM
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+install(TARGETS _segyio LIBRARY DESTINATION ${SEGYIO_PYTHON_INSTALL_DIR})
+install(DIRECTORY segyio/ DESTINATION ${SEGYIO_PYTHON_INSTALL_DIR})
+#install(FILES segyio/su/*.py LIBRARY DESTINATION segyio/su)
 
-    # if DESTDIR is used, either for build and install, and make (or similar)
-    # is the generator, the scikit-build's internal install command will
-    # respect it and install the build-dir shared object there. The cmake
-    # driven install already respects DESTDIR by translating into --root, so
-    # simply remove it from then environment when doing python commands
-    #
-    # This is probably something that should be addressed upstream
-    COMMAND ${CMAKE_COMMAND} -E env --unset=DESTDIR
-            ${PYTHON_EXECUTABLE} ${setup.py}
-        # build the extension inplace (really, once its built, copy it to the
-        # source tree) so that post-build, the directory can be used to run
-        # tests against
-        build_ext --inplace
-        build # setup.py build args
-            --cmake-executable ${CMAKE_COMMAND}
-            --generator ${CMAKE_GENERATOR}
-            ${SEGYIO_PYTHON_BUILD_TYPE}
-        -- # cmake to the extension
-            -Dsegyio_DIR=${SEGYIO_LIB_BINARY_DIR}
-            # "install" to the python/dlisio dir with rpath, so there's no need
-            # to fiddle with environment in ctest to load the core library from
-            # the build tree
-            -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON
-            -DCMAKE_INSTALL_RPATH=$<TARGET_FILE_DIR:segyio>
-            -DCMAKE_INSTALL_NAME_DIR=$<TARGET_FILE_DIR:segyio>
-)
-
-add_dependencies(segyio-python segyio)
-
-install(CODE "
-    if (DEFINED ENV{DESTDIR})
-        get_filename_component(abs-destdir \"\$ENV{DESTDIR}\" ABSOLUTE)
-        set(root_destdir --root \${abs-destdir})
-    endif()
-
-    if (CMAKE_INSTALL_PREFIX)
-        set(prefix --prefix \"${CMAKE_INSTALL_PREFIX}\")
-    endif ()
-
-    execute_process(
-        COMMAND ${CMAKE_COMMAND} -E env --unset=DESTDIR
-                ${PYTHON_EXECUTABLE} ${setup.py}
-            install
-                \${root_destdir}
-                --single-version-externally-managed
-                --record record.txt
-                --cmake-executable \"${CMAKE_COMMAND}\"
-                --generator \"${CMAKE_GENERATOR}\"
-                \${prefix}
-                ${SEGYIO_PYTHON_BUILD_TYPE}
-            --
-                -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=OFF
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    )"
-)
-
+#if (PYTHON_INSTALL_LAYOUT)
+#    set(setup-install-layout --install-layout ${PYTHON_INSTALL_LAYOUT})
+#endif()
+#
+#set(pyproject.toml ${CMAKE_CURRENT_SOURCE_DIR}/pyproject.toml)
+#if (CMAKE_BUILD_TYPE)
+#    # use the cmake_build_type of the source project, unless it has been
+#    # specifically overriden
+#    set(SEGYIO_PYTHON_BUILD_TYPE
+#        --build-type=${CMAKE_BUILD_TYPE}
+#        CACHE STRING "override CMAKE_BUILD_TYPE in python extension"
+#    )
+#endif ()
+#
+#add_custom_target(
+#    segyio-python ALL
+#    COMMENT "Building python library with pyproject.toml"
+#    SOURCES ${pyproject.toml}
+#    DEPENDS ${pyproject.toml}
+#    VERBATIM
+#    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+#
+#    # if DESTDIR is used, either for build and install, and make (or similar)
+#    # is the generator, the scikit-build's internal install command will
+#    # respect it and install the build-dir shared object there. The cmake
+#    # driven install already respects DESTDIR by translating into --root, so
+#    # simply remove it from then environment when doing python commands
+#    #
+#    # This is probably something that should be addressed upstream
+#    COMMAND ${CMAKE_COMMAND} -E env --unset=DESTDIR
+#            ${PYTHON_EXECUTABLE} ${pyproject.toml}
+#        # build the extension inplace (really, once its built, copy it to the
+#        # source tree) so that post-build, the directory can be used to run
+#        # tests against
+#        build_ext --inplace
+#        build # pyproject.toml build args
+#            --cmake-executable ${CMAKE_COMMAND}
+#            --generator ${CMAKE_GENERATOR}
+#            ${SEGYIO_PYTHON_BUILD_TYPE}
+#        -- # cmake to the extension
+#            -Dsegyio_DIR=${SEGYIO_LIB_BINARY_DIR}
+#            # "install" to the python/dlisio dir with rpath, so there's no need
+#            # to fiddle with environment in ctest to load the core library from
+#            # the build tree
+#            -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON
+#            -DCMAKE_INSTALL_RPATH=$<TARGET_FILE_DIR:segyio>
+#            -DCMAKE_INSTALL_NAME_DIR=$<TARGET_FILE_DIR:segyio>
+#)
+#
+#add_dependencies(segyio-python segyio)
+#
+#install(CODE "
+#    if (DEFINED ENV{DESTDIR})
+#        get_filename_component(abs-destdir \"\$ENV{DESTDIR}\" ABSOLUTE)
+#        set(root_destdir --root \${abs-destdir})
+#    endif()
+#
+#    if (CMAKE_INSTALL_PREFIX)
+#        set(prefix --prefix \"${CMAKE_INSTALL_PREFIX}\")
+#    endif ()
+#
+#    execute_process(
+#        COMMAND ${CMAKE_COMMAND} -E env --unset=DESTDIR
+#                ${PYTHON_EXECUTABLE} ${pyproject.toml}
+#            install
+#                \${root_destdir}
+#                --single-version-externally-managed
+#                --record record.txt
+#                --cmake-executable \"${CMAKE_COMMAND}\"
+#                --generator \"${CMAKE_GENERATOR}\"
+#                \${prefix}
+#                ${SEGYIO_PYTHON_BUILD_TYPE}
+#            --
+#                -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=OFF
+#        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+#    )"
+#)
+#
 option(BUILD_PYDOC "Build python documentation" OFF)
 
 if(BUILD_DOC)

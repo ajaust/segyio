@@ -180,6 +180,8 @@ if(NOT BUILD_TESTING)
     return()
 endif()
 
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test-artifacts)
+
 add_test(
     NAME python.unit
     COMMAND ${Python_EXECUTABLE} -m pytest test/
@@ -233,6 +235,6 @@ add_test(
 add_test(
     NAME python.example.multi-text
     COMMAND ${Python_EXECUTABLE} -m examples.make-multiple-text
-                _skbuild/multi-text.sgy
+                test-artifacts/multi-text.sgy
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )

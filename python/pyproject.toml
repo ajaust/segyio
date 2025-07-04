@@ -89,7 +89,7 @@ classifiers = [
 ]
 
 
-[tool.pytest]
+[tool.pytest.ini_options]
 python_files = "test/*.py"
 addopts = "--ignore=test/benchmarks.py --ignore=test/large.py"
 

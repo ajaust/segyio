@@ -10,13 +10,13 @@ endif ()
 cmake_minimum_required(VERSION 3.15)
 project(segyio-python)
 
-#if (REQUIRE_PYTHON)
-#    set(BUILD_PYTHON ON)
-#endif()
-#
-#if (NOT BUILD_PYTHON)
-#    return()
-#endif()
+if (REQUIRE_PYTHON)
+    set(BUILD_PYTHON ON)
+endif()
+
+if (NOT BUILD_PYTHON)
+    return()
+endif()
 
 find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
 

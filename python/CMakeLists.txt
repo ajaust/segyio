@@ -54,7 +54,11 @@ install(DIRECTORY segyio/ DESTINATION ${SEGYIO_PYTHON_INSTALL_DIR})
 #add_custom_command(TARGET _segyio POST_BUILD
 #    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:_segyio> ${CMAKE_CURRENT_SOURCE_DIR}/segyio/asdf.so
 #)
-# Emulate
+
+# Emulate in-place build behavior of invoking `python setup.py build_ext -i`.
+# This places the binding library into the `python/segyio` directory. This
+# allows the usage of the Python package from within `python/` without the need
+# to change any paths.
 set_target_properties(_segyio PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/segyio
 )

@@ -1,16 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 project(segyio-python LANGUAGES C CXX)
 
-if (NOT SKBUILD)
-    if (REQUIRE_PYTHON)
-        set(BUILD_PYTHON ON)
-    endif()
-
-    if (NOT BUILD_PYTHON)
-        return()
-    endif()
-endif()
-
 set(CMAKE_CXX_STANDARD 11)
 
 find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)

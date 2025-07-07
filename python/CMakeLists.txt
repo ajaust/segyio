@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(segyio-python LANGUAGES C CXX)
+project(segyio-python LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 11)
 

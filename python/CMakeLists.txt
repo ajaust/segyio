@@ -13,6 +13,14 @@ endif()
 python_add_library(_segyio MODULE WITH_SOABI segyio/segyio.cpp)
 target_link_libraries(_segyio PRIVATE segyio::segyio)
 
+if (MSVC)
+    target_compile_options(_segyio
+        BEFORE
+        PRIVATE
+            /EHsc
+    )
+endif ()
+
 if (SKBUILD)
     set(SEGYIO_PYTHON_INSTALL_DIR segyio)
 else()
@@ -27,15 +35,6 @@ else()
     # This is not a path one would expect the Python library to be in.
     set(SEGYIO_PYTHON_INSTALL_DIR lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages/segyio)
 endif()
-
-
-if (MSVC)
-    target_compile_options(_segyio
-        BEFORE
-        PRIVATE
-            /EHsc
-    )
-endif ()
 
 install(TARGETS _segyio LIBRARY DESTINATION ${SEGYIO_PYTHON_INSTALL_DIR})
 

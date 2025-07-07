@@ -1,10 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
+project(segyio-python LANGUAGES C CXX)
 
-if (SKBUILD)
-    project(segyio-python-extension LANGUAGES C CXX)
-else()
-    project(segyio-python)
-
+if (NOT SKBUILD)
     if (REQUIRE_PYTHON)
         set(BUILD_PYTHON ON)
     endif()
@@ -17,8 +14,8 @@ endif()
 set(CMAKE_CXX_STANDARD 11)
 
 find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
-# If run via a Python build path, i.e., `python build`, `pip install` etc., we
-# expect that the segyio library is available on the system.
+# If we executate CMake via a Python build path, i.e., `python build`, `pip
+# install` etc., we expect that the segyio library is available on the system.
 if (SKBUILD)
     find_package(segyio REQUIRED)
 endif()
@@ -29,6 +26,13 @@ target_link_libraries(_segyio PRIVATE segyio::segyio)
 if (SKBUILD)
     set(SEGYIO_PYTHON_INSTALL_DIR segyio)
 else()
+    # CMake defines Python_SITELIB that points to the system path for Python
+    # libraries, but we cannot use it here. In case of a user-specified
+    # installation prefix, CMake would merge the installation path into
+    # something like ${CMAKE_INSTALL_PREFIX}/${Python_SITELIB} which could be
+    # someing like this:
+    #
+    # /usr/local/usr/lib/python3.12/site-packages
     set(SEGYIO_PYTHON_INSTALL_DIR lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages/segyio)
 endif()
 
@@ -43,9 +47,10 @@ endif ()
 
 install(TARGETS _segyio LIBRARY DESTINATION ${SEGYIO_PYTHON_INSTALL_DIR})
 
-# If run via a Python build path, everything is set up. The installation and
-# collection of relevant files is handled by scikit-build-core. Other options,
-# like build the documentation, are not available via the Pytohn build path.
+# If run CMake via a Python build path, we have set up everything needed. The
+# installation and collection of relevant files is handled by
+# scikit-build-core. Other options, like building the documentation, are not
+# available via the Python build path.
 if (SKBUILD)
     return()
 endif()

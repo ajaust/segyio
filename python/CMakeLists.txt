@@ -1,29 +1,36 @@
-if (SKBUILD)
-    # invoked as a part of scikit-build, so this is just a proxy for the python
-    # extension cmake. this works around the fundamental limitation in cmake
-    # that it looks only for directories with a CMakeLists.txt in it, not for a
-    # named file
-    include(setup-CMakeLists.txt)
-    return ()
-endif ()
-
 cmake_minimum_required(VERSION 3.15)
-project(segyio-python)
 
-if (REQUIRE_PYTHON)
-    set(BUILD_PYTHON ON)
+if (SKBUILD)
+    project(segyio-python-extension LANGUAGES C CXX)
+else()
+    project(segyio-python)
+
+    if (REQUIRE_PYTHON)
+        set(BUILD_PYTHON ON)
+    endif()
+
+    if (NOT BUILD_PYTHON)
+        return()
+    endif()
 endif()
 
-if (NOT BUILD_PYTHON)
-    return()
-endif()
+set(CMAKE_CXX_STANDARD 11)
 
 find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
+# If run via a Python build path, i.e., `python build`, `pip install` etc., we
+# expect that the segyio library is available on the system.
+if (SKBUILD)
+    find_package(segyio REQUIRED)
+endif()
 
 python_add_library(_segyio MODULE WITH_SOABI segyio/segyio.cpp)
 target_link_libraries(_segyio PRIVATE segyio::segyio)
 
-set(SEGYIO_PYTHON_INSTALL_DIR lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages/segyio)
+if (SKBUILD)
+    set(SEGYIO_PYTHON_INSTALL_DIR segyio)
+else()
+    set(SEGYIO_PYTHON_INSTALL_DIR lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages/segyio)
+endif()
 
 
 if (MSVC)
@@ -35,6 +42,13 @@ if (MSVC)
 endif ()
 
 install(TARGETS _segyio LIBRARY DESTINATION ${SEGYIO_PYTHON_INSTALL_DIR})
+
+# If run via a Python build path, everything is set up. The installation and
+# collection of relevant files is handled by scikit-build-core. Other options,
+# like build the documentation, are not available via the Pytohn build path.
+if (SKBUILD)
+    return()
+endif()
 
 # Explicitly install Python files to avoid copying files that are not required,
 # e.g., segyio.cpp or folder like __pycache__ that exist if the tests were run

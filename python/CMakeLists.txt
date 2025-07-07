@@ -27,8 +27,8 @@ else()
     # CMake defines Python_SITELIB that points to the system path for Python
     # libraries, but we cannot use it here. In case of a user-specified
     # installation prefix, CMake would merge the installation path into
-    # something like ${CMAKE_INSTALL_PREFIX}/${Python_SITELIB} which could be
-    # something like this:
+    # something like ${CMAKE_INSTALL_PREFIX}/${Python_SITELIB} would lead to
+    # the wrong full path like this, for example:
     #
     # /usr/local/usr/lib/python3.12/site-packages
     #
@@ -84,7 +84,7 @@ if (MSVC)
     # On Windows, setting the target properties does not work. Whatever is
     # built on Windows, does not fullfil CMake's definition of "library",
     # "archive" or other outputs that are created for which I could set the
-    # directory.
+    # directory. Therefore, we copy the library into the correct location.
     add_custom_command(TARGET _segyio POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:_segyio> ${CMAKE_CURRENT_SOURCE_DIR}/segyio
     )

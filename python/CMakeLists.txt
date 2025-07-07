@@ -20,9 +20,11 @@ else()
     # libraries, but we cannot use it here. In case of a user-specified
     # installation prefix, CMake would merge the installation path into
     # something like ${CMAKE_INSTALL_PREFIX}/${Python_SITELIB} which could be
-    # someing like this:
+    # something like this:
     #
     # /usr/local/usr/lib/python3.12/site-packages
+    #
+    # This is not a path one would expect the Python library to be in.
     set(SEGYIO_PYTHON_INSTALL_DIR lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages/segyio)
 endif()
 

@@ -38,8 +38,26 @@ endif()
 
 install(TARGETS _segyio LIBRARY DESTINATION ${SEGYIO_PYTHON_INSTALL_DIR})
 
-# If run CMake via a Python build path, we have set up everything needed. The
-# installation and collection of relevant files is handled by
+# Emulate in-place build behavior of invoking `python setup.py build_ext -i`.
+# This places the binding library into the `python/segyio` directory. Doing so
+# allows the usage of `ctest` to test the core library, but also the Python
+# package.
+if (MSVC)
+    # On Windows, setting the target properties does not work. Whatever is
+    # built on Windows, does not fullfil CMake's definition of "library",
+    # "archive" or other outputs that are created for which I could set the
+    # directory. Therefore, we copy the library into the correct location.
+    add_custom_command(TARGET _segyio POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:_segyio> ${CMAKE_CURRENT_SOURCE_DIR}/segyio
+    )
+else()
+    set_target_properties(_segyio PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/segyio
+    )
+endif()
+
+# If run CMake is run via a Python build path, we have set up everything
+# needed. The installation and collection of relevant files is handled by
 # scikit-build-core. Other options, like building the documentation, are not
 # available via the Python build path.
 if (SKBUILD)
@@ -75,24 +93,6 @@ install(
         segyio/su/words.py
     DESTINATION ${SEGYIO_PYTHON_INSTALL_DIR}/su
 )
-
-# Emulate in-place build behavior of invoking `python setup.py build_ext -i`.
-# This places the binding library into the `python/segyio` directory. Doing so
-# allows the usage of `ctest` to test the core library, but also the Python
-# package.
-if (MSVC)
-    # On Windows, setting the target properties does not work. Whatever is
-    # built on Windows, does not fullfil CMake's definition of "library",
-    # "archive" or other outputs that are created for which I could set the
-    # directory. Therefore, we copy the library into the correct location.
-    add_custom_command(TARGET _segyio POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:_segyio> ${CMAKE_CURRENT_SOURCE_DIR}/segyio
-    )
-else()
-    set_target_properties(_segyio PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/segyio
-    )
-endif()
 
 option(BUILD_PYDOC "Build python documentation" OFF)
 

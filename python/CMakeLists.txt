@@ -48,22 +48,51 @@ if (MSVC)
 endif ()
 
 install(TARGETS _segyio LIBRARY DESTINATION ${SEGYIO_PYTHON_INSTALL_DIR})
-install(DIRECTORY segyio/ DESTINATION ${SEGYIO_PYTHON_INSTALL_DIR})
-#install(FILES segyio/su/*.py LIBRARY DESTINATION segyio/su)
 
-add_custom_command(TARGET _segyio POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:_segyio> ${CMAKE_CURRENT_SOURCE_DIR}/segyio
+# Explicitly install Python files to avoid copying files that are not required,
+# e.g., segyio.cpp or folder like __pycache__ that exist if the tests were run
+# via ctest.
+install(
+    FILES
+        segyio/__init__.py
+        segyio/binfield.py
+        segyio/create.py
+        segyio/depth.py
+        segyio/field.py
+        segyio/gather.py
+        segyio/line.py
+        segyio/open.py
+        segyio/segy.py
+        segyio/segysampleformat.py
+        segyio/tools.py
+        segyio/trace.py
+        segyio/tracefield.py
+        segyio/tracesortingformat.py
+        segyio/utils.py
+    DESTINATION ${SEGYIO_PYTHON_INSTALL_DIR}
+)
+install(
+    FILES
+        segyio/su/__init__.py
+        segyio/su/file.py
+        segyio/su/words.py
+    DESTINATION ${SEGYIO_PYTHON_INSTALL_DIR}/su
 )
 
 # Emulate in-place build behavior of invoking `python setup.py build_ext -i`.
-# This places the binding library into the `python/segyio` directory. This
-# allows the usage of the Python package from within `python/` without the need
-# to change any paths.
-set_target_properties(_segyio PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/segyio
-    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/segyio
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/segyio
-)
+# This places the binding library into the `python/segyio` directory. Doing so
+# allows the usage of `ctest` to also test the Python package.
+if (MSVC)
+    # On Windows, setting the target properties does not work.
+    add_custom_command(TARGET _segyio POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:_segyio> ${CMAKE_CURRENT_SOURCE_DIR}/segyio
+    )
+else()
+    set_target_properties(_segyio PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/segyio
+    )
+endif()
+
 
 #if (PYTHON_INSTALL_LAYOUT)
 #    set(setup-install-layout --install-layout ${PYTHON_INSTALL_LAYOUT})

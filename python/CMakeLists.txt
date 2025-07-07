@@ -77,7 +77,8 @@ install(
 
 # Emulate in-place build behavior of invoking `python setup.py build_ext -i`.
 # This places the binding library into the `python/segyio` directory. Doing so
-# allows the usage of `ctest` to also test the Python package.
+# allows the usage of `ctest` to test the core library, but also the Python
+# package.
 if (MSVC)
     # On Windows, setting the target properties does not work. Whatever is
     # built on Windows, does not fullfil CMake's definition of "library",

@@ -79,7 +79,10 @@ install(
 # This places the binding library into the `python/segyio` directory. Doing so
 # allows the usage of `ctest` to also test the Python package.
 if (MSVC)
-    # On Windows, setting the target properties does not work.
+    # On Windows, setting the target properties does not work. Whatever is
+    # built on Windows, does not fullfil CMake's definition of "library",
+    # "archive" or other outputs that are created for which I could set the
+    # directory.
     add_custom_command(TARGET _segyio POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:_segyio> ${CMAKE_CURRENT_SOURCE_DIR}/segyio
     )

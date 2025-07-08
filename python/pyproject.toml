@@ -12,12 +12,7 @@ authors = [
     { name = "Equinor ASA", email = "jokva@equinor.com" },
 ]
 urls.homepage = "https://github.com/equinor/segyio"
-#packages = ["segyio", "segyio.su"]
-# Not sure if the part below is still needed
-#package_data = { "segyio" = ["segyio.dll"], }
 license = "LGPL-3.0-or-later"
-#license-files = [ "License.md" ]
-# platforms = "any"
 requires-python = ">=3.9"
 dependencies = ["numpy >= 1.10"]
 readme = { text = """

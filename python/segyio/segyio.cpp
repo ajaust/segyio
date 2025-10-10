@@ -1737,10 +1737,6 @@ PyMethodDef methods [] = {
 
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-field-initializers"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 PyTypeObject Segyfd = {
     PyVarObject_HEAD_INIT( NULL, 0 )
     "_segyio.segyfd",               /* name */
@@ -1778,9 +1774,21 @@ PyTypeObject Segyfd = {
     0,                              /* tp_descr_set */
     0,                              /* tp_dictoffset */
     (initproc)fd::init,             /* tp_init */
+    0,                              /* tp_alloc */
+    0,                              /* tp_new */
+    0,                              /* tp_free */
+    0,                              /* tp_is_gc */
+    0,                              /* tp_bases */
+    0,                              /* tp_mro */
+    0,                              /* tp_cache */
+    0,                              /* tp_subclasses */
+    0,                              /* tp_weaklist */
+    0,                              /* tp_del */
+    0,                              /* tp_version_tag */
+    0,                              /* tp_finalize */
+    0,                              /* tp_vectorcall */
+    0                               /* tp_watched */
 };
-#pragma GCC diagnostic pop
-#pragma clang diagnostic pop
 
 PyObject* binsize( PyObject* ) {
     return PyLong_FromLong( segy_binheader_size() );
@@ -2132,19 +2140,17 @@ PyMethodDef SegyMethods[] = {
 
 /* module initialization */
 #ifdef IS_PY3K
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-field-initializers"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 static struct PyModuleDef segyio_module = {
         PyModuleDef_HEAD_INIT,
         "_segyio",   /* name of module */
         NULL, /* module documentation, may be NULL */
         -1,  /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
         SegyMethods,
+        NULL, /* m_slots */
+        NULL, /* m_traverse */
+        NULL, /* m_clear */
+        NULL /* m_free */
 };
-#pragma GCC diagnostic pop
-#pragma clang diagnostic pop
 
 PyMODINIT_FUNC
 PyInit__segyio(void) {

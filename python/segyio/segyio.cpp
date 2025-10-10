@@ -1686,6 +1686,14 @@ PyObject* rotation( segyfd* self, PyObject* args ) {
     return PyFloat_FromDouble( rotation );
 }
 
+#pragma warning(push)
+#pragma warning(disable : 4068, justification: "Allow pragmas of other compilers.")
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-function-type"
+#pragma clang diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-function-type"
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 PyMethodDef methods [] = {
     { "segyopen", (PyCFunction) fd::segyopen,
       METH_VARARGS | METH_KEYWORDS, "Open file." },
@@ -1728,9 +1736,18 @@ PyMethodDef methods [] = {
 
     { NULL }
 };
+#pragma GCC diagnostic pop
+#pragma clang diagnostic pop
+#pragma warning(pop)
 
 }
 
+#pragma warning(push)
+#pragma warning(disable : 4068, justification: "Allow pragmas of other compilers.")
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 PyTypeObject Segyfd = {
     PyVarObject_HEAD_INIT( NULL, 0 )
     "_segyio.segyfd",               /* name */
@@ -1769,6 +1786,9 @@ PyTypeObject Segyfd = {
     0,                              /* tp_dictoffset */
     (initproc)fd::init,             /* tp_init */
 };
+#pragma GCC diagnostic pop
+#pragma clang diagnostic pop
+#pragma warning(pop)
 
 PyObject* binsize( PyObject* ) {
     return PyLong_FromLong( segy_binheader_size() );
@@ -2093,6 +2113,14 @@ PyObject* format( PyObject* , PyObject* args ) {
     return out;
 }
 
+#pragma warning(push)
+#pragma warning(disable : 4068, justification: "Allow pragmas of other compilers.")
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-function-type"
+#pragma clang diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-function-type"
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 PyMethodDef SegyMethods[] = {
     { "binsize",  (PyCFunction) binsize,  METH_NOARGS, "Size of the binary header." },
     { "thsize",   (PyCFunction) thsize,   METH_NOARGS, "Size of the trace header."  },
@@ -2109,11 +2137,20 @@ PyMethodDef SegyMethods[] = {
 
     { NULL }
 };
+#pragma GCC diagnostic pop
+#pragma clang diagnostic pop
+#pragma warning(pop)
 
 }
 
 /* module initialization */
 #ifdef IS_PY3K
+#pragma warning(push)
+#pragma warning(disable : 4068, justification: "Allow pragmas of other compilers.")
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 static struct PyModuleDef segyio_module = {
         PyModuleDef_HEAD_INIT,
         "_segyio",   /* name of module */
@@ -2121,6 +2158,9 @@ static struct PyModuleDef segyio_module = {
         -1,  /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
         SegyMethods
 };
+#pragma GCC diagnostic pop
+#pragma clang diagnostic pop
+#pragma warning(pop)
 
 PyMODINIT_FUNC
 PyInit__segyio(void) {

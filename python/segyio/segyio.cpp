@@ -1686,8 +1686,25 @@ PyObject* rotation( segyfd* self, PyObject* args ) {
     return PyFloat_FromDouble( rotation );
 }
 
+// Disable warnigns about unknown pragmas on Windows
 #pragma warning(push)
 #pragma warning(disable : 4068, justification: "Allow pragmas of other compilers.")
+/*
+ * Disable warnings for methods that allow for keyword arguments. The
+ * PyMethodDef always expects a pointer to a C implementation of type
+ * `PyCFunction` as second argument. `PyCFunction` expects two input arguments.
+ * This cannot be resolved for functions with keyword arguments (`METH_VARARGS
+ * | METH_KEYWORDS`, see [1]) that have three input arguments. We can either
+ * cast the method to `PyCFunctionWithKeywords` and get an error about too many
+ * input arguments or we cast to PyCFunction and get an error about
+ * non-matching function types.
+ *
+ * Note: The used pragmas are not standardised. Compiling with `-pedantic` may
+ * lead to compilation issues due to this.
+ *
+ * [1]: https://docs.python.org/3/c-api/structures.html
+ * [2]: https://stackoverflow.com/a/10264563
+ */
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wcast-function-type"
 #pragma GCC diagnostic push
@@ -1700,7 +1717,6 @@ PyMethodDef methods [] = {
 
     { "suopen", (PyCFunction) fd::suopen,
       METH_VARARGS | METH_KEYWORDS, "Open SU file." },
-
     { "close", (PyCFunction) fd::close, METH_VARARGS, "Close file." },
     { "flush", (PyCFunction) fd::flush, METH_VARARGS, "Flush file." },
     { "mmap",  (PyCFunction) fd::mmap,  METH_NOARGS,  "mmap file."  },

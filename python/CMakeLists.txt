@@ -70,30 +70,9 @@ endif()
 # e.g., segyio.cpp or folder like __pycache__ that exist if the tests were run
 # via ctest.
 install(
-    FILES
-        segyio/__init__.py
-        segyio/binfield.py
-        segyio/create.py
-        segyio/depth.py
-        segyio/field.py
-        segyio/gather.py
-        segyio/line.py
-        segyio/open.py
-        segyio/segy.py
-        segyio/segysampleformat.py
-        segyio/tools.py
-        segyio/trace.py
-        segyio/tracefield.py
-        segyio/tracesortingformat.py
-        segyio/utils.py
+    DIRECTORY segyio/
     DESTINATION ${SEGYIO_PYTHON_INSTALL_DIR}
-)
-install(
-    FILES
-        segyio/su/__init__.py
-        segyio/su/file.py
-        segyio/su/words.py
-    DESTINATION ${SEGYIO_PYTHON_INSTALL_DIR}/su
+    FILES_MATCHING PATTERN "*.py"
 )
 
 option(BUILD_PYDOC "Build python documentation" OFF)

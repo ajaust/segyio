@@ -154,7 +154,12 @@ jobs:
       - name: Configure and build
         shell: bash
         run: |
-          cmake -S . -B build -DBUILD_PYTHON=ON -DBUILD_BIN=OFF
+          cmake -S . -B build \
+            -DBUILD_PYTHON=ON \
+            -DBUILD_BIN=OFF \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  \
+            -DCMAKE_C_FLAGS="-Wextra -Wall -pedantic" \
+            -DCMAKE_CXX_FLAGS="-Wextra -Wall -pedantic"
           cmake --build build
 
       - name: Test

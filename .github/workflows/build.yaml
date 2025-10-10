@@ -158,8 +158,8 @@ jobs:
             -DBUILD_PYTHON=ON \
             -DBUILD_BIN=OFF \
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  \
-            -DCMAKE_C_FLAGS="-Wextra -Wall -pedantic" \
-            -DCMAKE_CXX_FLAGS="-Wextra -Wall -pedantic"
+            -DCMAKE_C_FLAGS="-Wextra -Wall" \
+            -DCMAKE_CXX_FLAGS="-Wextra -Wall"
           cmake --build build
 
       - name: Test

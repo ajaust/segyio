@@ -1686,7 +1686,6 @@ PyObject* rotation( segyfd* self, PyObject* args ) {
     return PyFloat_FromDouble( rotation );
 }
 
-PyMethodDef methods [] = {
 /*
  * Disable warnings for methods that allow for keyword arguments. The
  * PyMethodDef always expects a pointer to a C implementation of type
@@ -1704,6 +1703,7 @@ PyMethodDef methods [] = {
 #pragma clang diagnostic ignored "-Wcast-function-type"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-function-type"
+PyMethodDef methods [] = {
     { "segyopen", (PyCFunction) fd::segyopen,
       METH_VARARGS | METH_KEYWORDS, "Open file." },
     { "segymake", (PyCFunction) fd::segycreate,
@@ -1711,9 +1711,6 @@ PyMethodDef methods [] = {
 
     { "suopen", (PyCFunction) fd::suopen,
       METH_VARARGS | METH_KEYWORDS, "Open SU file." },
-#pragma GCC diagnostic pop
-#pragma clang diagnostic pop
-
     { "close", (PyCFunction) fd::close, METH_VARARGS, "Close file." },
     { "flush", (PyCFunction) fd::flush, METH_VARARGS, "Flush file." },
     { "mmap",  (PyCFunction) fd::mmap,  METH_NOARGS,  "mmap file."  },
@@ -1747,6 +1744,9 @@ PyMethodDef methods [] = {
 
     { NULL, NULL, 0, NULL }
 };
+#pragma GCC diagnostic pop
+#pragma clang diagnostic pop
+
 
 }
 

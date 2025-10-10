@@ -1687,13 +1687,32 @@ PyObject* rotation( segyfd* self, PyObject* args ) {
 }
 
 PyMethodDef methods [] = {
+/*
+ * Disable warnings for methods that allow for keyword arguments. The
+ * PyMethodDef always expects a pointer to a C implementation of type
+ * `PyCFunction` as second argument. `PyCFunction` expects two input arguments.
+ * This cannot be resolved for functions with keyword arguments (`METH_VARARGS
+ * | METH_KEYWORDS`, see [1]) that have three input arguments. We can either
+ * cast the method to `PyCFunctionWithKeywords` and get an error about too many
+ * input arguments or we cast to PyCFunction and get an error about
+ * non-matching function types.
+ *
+ * [1]: https://docs.python.org/3/c-api/structures.html
+ * [2]: https://stackoverflow.com/a/10264563
+ */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-function-type"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-function-type"
     { "segyopen", (PyCFunction) fd::segyopen,
       METH_VARARGS | METH_KEYWORDS, "Open file." },
-    { "segymake", (PyCFunctionWithKeywords) fd::segycreate,
+    { "segymake", (PyCFunction) fd::segycreate,
       METH_VARARGS | METH_KEYWORDS, "Create file." },
 
-    { "suopen", (PyCFunctionWithKeywords) fd::suopen,
+    { "suopen", (PyCFunction) fd::suopen,
       METH_VARARGS | METH_KEYWORDS, "Open SU file." },
+#pragma GCC diagnostic pop
+#pragma clang diagnostic pop
 
     { "close", (PyCFunction) fd::close, METH_VARARGS, "Close file." },
     { "flush", (PyCFunction) fd::flush, METH_VARARGS, "Flush file." },

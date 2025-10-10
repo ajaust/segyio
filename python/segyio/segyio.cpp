@@ -1686,6 +1686,10 @@ PyObject* rotation( segyfd* self, PyObject* args ) {
     return PyFloat_FromDouble( rotation );
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-function-type"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-function-type"
 PyMethodDef methods [] = {
     { "segyopen", (PyCFunction) fd::segyopen,
       METH_VARARGS | METH_KEYWORDS, "Open file." },
@@ -1726,11 +1730,17 @@ PyMethodDef methods [] = {
     { "cube_metrics", (PyCFunction) fd::cube_metrics, METH_NOARGS,  "Cube metrics."    },
     { "indices",      (PyCFunction) fd::indices,      METH_VARARGS, "Indices."         },
 
-    { NULL }
+    { NULL, NULL, 0, NULL }
 };
+#pragma GCC diagnostic pop
+#pragma clang diagnostic pop
 
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 PyTypeObject Segyfd = {
     PyVarObject_HEAD_INIT( NULL, 0 )
     "_segyio.segyfd",               /* name */
@@ -1769,6 +1779,8 @@ PyTypeObject Segyfd = {
     0,                              /* tp_dictoffset */
     (initproc)fd::init,             /* tp_init */
 };
+#pragma GCC diagnostic pop
+#pragma clang diagnostic pop
 
 PyObject* binsize( PyObject* ) {
     return PyLong_FromLong( segy_binheader_size() );
@@ -2093,6 +2105,10 @@ PyObject* format( PyObject* , PyObject* args ) {
     return out;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-function-type"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-function-type"
 PyMethodDef SegyMethods[] = {
     { "binsize",  (PyCFunction) binsize,  METH_NOARGS, "Size of the binary header." },
     { "thsize",   (PyCFunction) thsize,   METH_NOARGS, "Size of the trace header."  },
@@ -2107,20 +2123,28 @@ PyMethodDef SegyMethods[] = {
     { "fread_trace0", (PyCFunction) fread_trace0,  METH_VARARGS, "Find trace0 of a line."               },
     { "native",       (PyCFunction) format,        METH_VARARGS, "Convert to native float."             },
 
-    { NULL }
+    { NULL, NULL, 0, NULL }
 };
+#pragma GCC diagnostic pop
+#pragma clang diagnostic pop
 
 }
 
 /* module initialization */
 #ifdef IS_PY3K
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 static struct PyModuleDef segyio_module = {
         PyModuleDef_HEAD_INIT,
         "_segyio",   /* name of module */
         NULL, /* module documentation, may be NULL */
         -1,  /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
-        SegyMethods
+        SegyMethods,
 };
+#pragma GCC diagnostic pop
+#pragma clang diagnostic pop
 
 PyMODINIT_FUNC
 PyInit__segyio(void) {

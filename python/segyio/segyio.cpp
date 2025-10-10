@@ -883,7 +883,7 @@ void dealloc( segyfd* self ) {
     Py_TYPE( self )->tp_free( (PyObject*) self );
 }
 
-PyObject* close( segyfd* self ) {
+PyObject* close( segyfd* self, PyObject* Py_UNUSED(args) ) {
     /* multiple close() is a no-op */
     if( !self->ds ) return Py_BuildValue( "" );
 
@@ -898,7 +898,7 @@ PyObject* close( segyfd* self ) {
     return Py_BuildValue( "" );
 }
 
-PyObject* flush( segyfd* self ) {
+PyObject* flush( segyfd* self, PyObject* Py_UNUSED(args) ) {
     segy_datasource* ds = self->ds;
     if( !ds ) return NULL;
 
@@ -909,7 +909,7 @@ PyObject* flush( segyfd* self ) {
     return Py_BuildValue( "" );
 }
 
-PyObject* mmap( segyfd* self ) {
+PyObject* mmap( segyfd* self, PyObject* Py_UNUSED(args) ) {
     segy_datasource* ds = self->ds;
 
     if( !ds ) return NULL;
@@ -993,7 +993,7 @@ PyObject* puttext( segyfd* self, PyObject* args ) {
     return Py_BuildValue( "" );
 }
 
-PyObject* getbin( segyfd* self ) {
+PyObject* getbin( segyfd* self, PyObject* Py_UNUSED(args) ) {
     segy_datasource* ds = self->ds;
     if( !ds ) return NULL;
 
@@ -1168,7 +1168,7 @@ PyObject* field_foreach( segyfd* self, PyObject* args ) {
     return bufferobj;
 }
 
-PyObject* metrics( segyfd* self ) {
+PyObject* metrics( segyfd* self, PyObject* Py_UNUSED(args) ) {
     static const int text = SEGY_TEXT_HEADER_SIZE;
     static const int bin  = SEGY_BINARY_HEADER_SIZE;
     const int ext = (self->trace0 - (text + bin)) / text;
@@ -1204,7 +1204,7 @@ struct metrics_errmsg {
     }
 };
 
-PyObject* cube_metrics( segyfd* self ) {
+PyObject* cube_metrics( segyfd* self, PyObject* Py_UNUSED(args) ) {
     segy_datasource* ds = self->ds;
     if( !ds ) return NULL;
 
@@ -1686,17 +1686,13 @@ PyObject* rotation( segyfd* self, PyObject* args ) {
     return PyFloat_FromDouble( rotation );
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wcast-function-type"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-function-type"
 PyMethodDef methods [] = {
     { "segyopen", (PyCFunction) fd::segyopen,
       METH_VARARGS | METH_KEYWORDS, "Open file." },
-    { "segymake", (PyCFunction) fd::segycreate,
+    { "segymake", (PyCFunctionWithKeywords) fd::segycreate,
       METH_VARARGS | METH_KEYWORDS, "Create file." },
 
-    { "suopen", (PyCFunction) fd::suopen,
+    { "suopen", (PyCFunctionWithKeywords) fd::suopen,
       METH_VARARGS | METH_KEYWORDS, "Open SU file." },
 
     { "close", (PyCFunction) fd::close, METH_VARARGS, "Close file." },
@@ -1732,8 +1728,6 @@ PyMethodDef methods [] = {
 
     { NULL, NULL, 0, NULL }
 };
-#pragma GCC diagnostic pop
-#pragma clang diagnostic pop
 
 }
 
@@ -1790,15 +1784,15 @@ PyTypeObject Segyfd = {
     0                               /* tp_watched */
 };
 
-PyObject* binsize( PyObject* ) {
+PyObject* binsize( PyObject*, PyObject* Py_UNUSED(args) ) {
     return PyLong_FromLong( segy_binheader_size() );
 }
 
-PyObject* thsize( PyObject* ) {
+PyObject* thsize( PyObject*, PyObject* Py_UNUSED(args) ) {
     return PyLong_FromLong( SEGY_TRACE_HEADER_SIZE );
 }
 
-PyObject* textsize(PyObject* ) {
+PyObject* textsize(PyObject*, PyObject* Py_UNUSED(args) ) {
     return PyLong_FromLong( SEGY_TEXT_HEADER_SIZE );
 }
 
@@ -2113,10 +2107,6 @@ PyObject* format( PyObject* , PyObject* args ) {
     return out;
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wcast-function-type"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-function-type"
 PyMethodDef SegyMethods[] = {
     { "binsize",  (PyCFunction) binsize,  METH_NOARGS, "Size of the binary header." },
     { "thsize",   (PyCFunction) thsize,   METH_NOARGS, "Size of the trace header."  },
@@ -2133,8 +2123,6 @@ PyMethodDef SegyMethods[] = {
 
     { NULL, NULL, 0, NULL }
 };
-#pragma GCC diagnostic pop
-#pragma clang diagnostic pop
 
 }
 

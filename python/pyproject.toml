@@ -82,11 +82,12 @@ classifiers = [
 python_files = "test/*.py"
 addopts = "--ignore=test/benchmarks.py --ignore=test/large.py --ignore=test/stream.py"
 
-[tool.scikit-build]
+[tool.scikit-build.cmake.define]
 # We can safely pass OSX_DEPLOYMENT_TARGET as it's ignored on
 # everything not OS X. We depend on C++11, which makes our minimum
 # supported OS X release 10.9
-cmake.args = [ "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9" ]
+CMAKE_OSX_DEPLOYMENT_TARGET="10.9"
+CMAKE_COMPILE_WARNING_AS_ERROR="ON"
 
 [tool.cibuildwheel]
 before-build = [
@@ -117,6 +118,9 @@ test-requires = "pytest"
 test-command = [ "cd python", "pytest test" ]
 test-sources = [ "python/test", "python/pyproject.toml", "test-data" ]
 
+[tool.cibuildwheel.linux]
+environment = { CMAKE_C_FLAGS = "-Wextra -Wall -pedantic", CMAKE_CXX_FLAGS = "-Wextra -Wall -pedantic" }
+
 [tool.cibuildwheel.macos]
 before-build = [
     """sudo cmake \
@@ -136,3 +140,7 @@ before-build = [
         --config Release \
     """,
 ]
+environment = { CMAKE_C_FLAGS = "-Wextra -Wall -pedantic", CMAKE_CXX_FLAGS = "-Wextra -Wall -pedantic" }
+
+[tool.cibuildwheel.windows]
+environment = { CMAKE_C_FLAGS = "/Wall /W4", CMAKE_CXX_FLAGS = "/W4 /Wall" }

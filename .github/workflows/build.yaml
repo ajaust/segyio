@@ -56,12 +56,6 @@ jobs:
             build_type: "Debug"
             compiler_flags: "-Wextra -Wall -pedantic"
             build_python: "OFF"
-          - os: ubuntu-latest
-            privledges: "sudo"
-            compiler: "clang"
-            build_type: "Debug"
-            compiler_flags: "-Wextra -Wall -pedantic"
-            build_python: "ON"
           - os: macos-13
             privledges: "sudo"
             build_type: "Release"
@@ -70,6 +64,11 @@ jobs:
             privledges: "sudo"
             build_type: "Release"
             build_python: "OFF"
+          - os: macos-latest
+            privledges: "sudo"
+            build_type: "Debug"
+            compiler_flags: "-Wextra -Wall -pedantic"
+            build_python: "ON"
 
     steps:
       - uses: actions/checkout@v4
@@ -81,6 +80,11 @@ jobs:
             sudo DEBIAN_FRONTEND=noninteractive apt-get -y install clang clang-tools
             echo "CC=/usr/bin/clang"    >> $GITHUB_ENV
             echo "CXX=/usr/bin/clang++" >> $GITHUB_ENV
+
+      - uses: actions/setup-python@v6
+        if: ${{ matrix.build_python == 'ON' }}
+        with:
+          python-version: '3.13'
 
       - name: Install build/test for Python dependencies
         working-directory: python

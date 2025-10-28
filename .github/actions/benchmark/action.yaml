@@ -1,6 +1,5 @@
 name: Benchmark
 description: benchmark execution
-permissions: {}
 
 inputs:
   ref:
